@@ -1,28 +1,28 @@
 package negocio.beans;
 
 class Aresta {
-    int origem, destino;
+	Departamento origem, destino;
     double distancia;
 
-    public Aresta(int origem, int destino, double distancia) {
+    public Aresta(Departamento origem, Departamento destino, double distancia) {
         this.origem = origem;
         this.destino = destino;
         this.distancia = distancia;
     }
 
-	public int getOrigem() {
+	public Departamento getOrigem() {
 		return origem;
 	}
 
-	public void setOrigem(int origem) {
+	public void setOrigem(Departamento origem) {
 		this.origem = origem;
 	}
 
-	public int getDestino() {
+	public Departamento getDestino() {
 		return destino;
 	}
 
-	public void setDestino(int destino) {
+	public void setDestino(Departamento destino) {
 		this.destino = destino;
 	}
 

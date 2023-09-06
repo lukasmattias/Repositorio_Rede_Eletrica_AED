@@ -13,8 +13,8 @@ public class SistemaRedeEletricaController {
 
     @FXML
     private void initialize() {
-        // Inicialização da interface, configurações, etc.
+        // Inicializaï¿½ï¿½o da interface, configuraï¿½ï¿½es, etc.
     }
 
-    // Adicione métodos para manipular eventos da interface
+    // Adicione mï¿½todos para manipular eventos da interface
 }

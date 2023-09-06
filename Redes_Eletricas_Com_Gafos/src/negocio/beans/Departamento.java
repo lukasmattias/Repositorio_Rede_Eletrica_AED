@@ -1,10 +1,12 @@
 package negocio.beans;
 
 class Departamento {
+	int indice;
     String nome;
     int numPessoas;
 
     public Departamento(String nome, int numPessoas) {
+    	this.indice = 0;
         this.nome = nome;
         this.numPessoas = numPessoas;
     }
@@ -25,5 +27,12 @@ class Departamento {
 		this.numPessoas = numPessoas;
 	}
     
+	public int getIndice () {
+		return this.indice;
+	}
+	
+	public void setIndice(int indice) {
+		this.indice = indice;	
+	}
     
 }
