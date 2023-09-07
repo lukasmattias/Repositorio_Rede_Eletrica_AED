@@ -12,7 +12,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         Parent fxmlLoader = FXMLLoader.load(MainApp.class.getResource("SistemaRedeEletrica.fxml"));
         Scene scene = new Scene(fxmlLoader);
-        stage.setTitle("Sistema de Rede El�trica da UFRPE");
+        stage.setTitle("Sistema de Rede Eletrica da UFRPE");
         stage.setScene(scene);
         stage.show();
     }
