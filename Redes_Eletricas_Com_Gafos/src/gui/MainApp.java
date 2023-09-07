@@ -15,7 +15,7 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Sistema de Rede El�trica da UFRPE");
+        stage.setTitle("Sistema de Rede Eletrica da UFRPE");
         stage.show();
     }
 

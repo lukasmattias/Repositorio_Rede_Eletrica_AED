@@ -29,7 +29,7 @@ public class SistemaRedeEletrica {
                 case 1:
                     System.out.print("Digite o nome do departamento: ");
                     String nomeDepartamento = scanner.nextLine();
-                    System.out.print("Digite o n�mero de pessoas no departamento: ");
+                    System.out.print("Digite o numero de pessoas no departamento: ");
                     int numPessoas = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
                     try {
@@ -41,13 +41,13 @@ public class SistemaRedeEletrica {
                     }
                     break;
                 case 2:
-                    System.out.print("Digite o �ndice do departamento de origem: ");
+                    System.out.print("Digite o indice do departamento de origem: ");
                     int origem = scanner.nextInt();
-                    System.out.print("Digite o �ndice do departamento de destino: ");
+                    System.out.print("Digite o indice do departamento de destino: ");
                     int destino = scanner.nextInt();
-                    System.out.print("Digite a dist�ncia entre os departamentos: ");
+                    System.out.print("Digite a distancia entre os departamentos: ");
                     double distancia = scanner.nextDouble();
-                    scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
+                    scanner.nextLine(); 
                     try {
                     grafo.adicionarAresta(grafo.departamentos.get(origem), grafo.departamentos.get(destino), distancia);
                     System.out.println("Aresta adicionada com sucesso!");
@@ -57,32 +57,32 @@ public class SistemaRedeEletrica {
                     }
                     break;
                 case 3:
-                    System.out.print("Digite o �ndice do departamento de origem: ");
+                    System.out.print("Digite o indice do departamento de origem: ");
                     origem = scanner.nextInt();
-                    System.out.print("Digite o �ndice do departamento de destino: ");
+                    System.out.print("Digite o indice do departamento de destino: ");
                     destino = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
                     grafo.removerAresta(grafo.departamentos.get(origem), grafo.departamentos.get(destino));
                     System.out.println("Aresta removida com sucesso!");
                     break;
                 case 4:
-                    System.out.println("\nDepartamentos e �ndices:");
+                    System.out.println("\nDepartamentos e indices:");
                     grafo.imprimirDepartamentos();
-                    System.out.print("\nDigite o �ndice do departamento inicial para calcular a AGM: ");
+                    System.out.print("\nDigite o indice do departamento inicial para calcular a AGM: ");
                     int departamentoInicial = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
                     Grafo agm = grafo.calcularAGM(departamentoInicial);
-                    System.out.println("\n�rvore Geradora M�nima:");
+                    System.out.println("\narvore Geradora Minima:");
                     agm.imprimirAGM();
                     System.out.println("Custo Total da AGM: " + agm.calcularCustoTotal());
                     System.out.println("Pessoas Atendidas pela AGM: " + agm.calcularPessoasAtendidas());
                     break;
                 case 5:
-                    System.out.println("Saindo do Sistema de Rede El�trica. At� logo!");
+                    System.out.println("Saindo do Sistema de Rede Eletrica. Ate logo!");
                     scanner.close();
                     System.exit(0);
                 default:
-                    System.out.println("Op��o inv�lida. Por favor, escolha uma op��o v�lida.");
+                    System.out.println("Opcao invalida. Por favor, escolha uma opcao valida.");
             }
         }
     }
