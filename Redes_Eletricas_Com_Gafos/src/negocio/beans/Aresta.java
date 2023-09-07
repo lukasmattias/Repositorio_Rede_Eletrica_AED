@@ -1,6 +1,6 @@
 package negocio.beans;
 
-class Aresta {
+public class Aresta {
 	Departamento origem, destino;
     double distancia;
 

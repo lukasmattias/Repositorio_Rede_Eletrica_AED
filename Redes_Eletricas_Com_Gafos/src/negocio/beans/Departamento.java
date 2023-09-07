@@ -1,12 +1,11 @@
 package negocio.beans;
 
-class Departamento {
-	int indice;
+public class Departamento extends No{
     String nome;
     int numPessoas;
 
-    public Departamento(String nome, int numPessoas) {
-    	this.indice = 0;
+    public Departamento(String nome, int numPessoas, double x, double y, int indice) {
+    	super(x,y, indice);
         this.nome = nome;
         this.numPessoas = numPessoas;
     }
@@ -25,14 +24,6 @@ class Departamento {
 
 	public void setNumPessoas(int numPessoas) {
 		this.numPessoas = numPessoas;
-	}
-    
-	public int getIndice () {
-		return this.indice;
-	}
-	
-	public void setIndice(int indice) {
-		this.indice = indice;	
 	}
     
 }

@@ -5,8 +5,7 @@ import java.util.List;
 
 import exception.OperacaoInvalidaException;
 
-class Grafo {
-	
+public class Grafo {
     List<Departamento> departamentos;
     List<Aresta> arestas;
     int controleIndice = 0;
@@ -17,126 +16,97 @@ class Grafo {
         arestas = new ArrayList<>();
     }
     
-    /*
-     * singleton (instancia unica)
-     * */ 
-    
     public static Grafo getInstance() {
     if (instance == null) {
     	instance = new Grafo();
     }
     return instance;
     }
-    
-    /* metodo que verifica se o departamento existe 
-     * e adiciona departamento ao grafo, 
-     * caso ja exista levanta ema exception*/
-    
-    public void adicionarDepartamento(String nome, int numPessoas) {
-    	Departamento novo = new Departamento (nome, numPessoas);
+
+    public void adicionarDepartamento(String nome, int numPessoas, double x, double y) throws OperacaoInvalidaException {
+    	Departamento novo = new Departamento (nome, numPessoas, x, y, controleIndice);
     	if (!existeDepartamento(novo)) {
-    	departamentos.add(new Departamento(nome, numPessoas));
+    	departamentos.add(novo);
         controleIndice++;
     	}
     	else{
-    		throw new OperacaoInvalidaException("ERRO: O nome do departamento ja existe!");
+    		throw new OperacaoInvalidaException("ERRO: O nome do departamento jÃ¡ existe.");
     	}        
     }
 
-    /*metodo que associa arestas a departamentos
-     *  e adiciona na list de arestas*/
-    
-    public void adicionarAresta(Departamento origem, Departamento destino, double distancia) {
-        arestas.add(new Aresta(origem, destino, distancia));
+
+    public void adicionarAresta(int indiceOrigem, int indiceDestino, double distancia) throws OperacaoInvalidaException {
+       if(indiceOrigem <= (this.departamentos.size()-1) && indiceOrigem >= 0 
+    		   && indiceDestino <= (this.departamentos.size()-1) && indiceDestino >=0) {
+    	 arestas.add(new Aresta(this.departamentos.get(indiceOrigem), this.departamentos.get(indiceDestino), distancia));  
+       }
+       else {
+    	   throw new OperacaoInvalidaException("Os Ã­ndices informados nÃ£o correspondem a departamentos vÃ¡lidos.");
+       }
     }
 
-    /* método verifica se existe uma aresta
-     *  entre dois departamentos com base nos indices*/
+    // Implemente as operaï¿½ï¿½es de busca e remoï¿½ï¿½o de nï¿½s e arestas
     
     public boolean existeAresta(int origem, int destino) {
         for (Aresta aresta : arestas) {
-            if ((aresta.origem.getIndice() == origem) && (aresta.destino.getIndice() == destino) ||
-                (aresta.origem.getIndice() == destino) && (aresta.destino.getIndice() == origem)) {
+            if ((aresta.origem.getId() == origem) && (aresta.destino.getId() == destino) ||
+                (aresta.origem.getId() == destino) && (aresta.destino.getId() == origem)) {
                 return true;
             }
         }
         return false;
     }
 
-    /* remove uma aresta entre 
-     * dois departamentos específicos */
-    
-    public void removerAresta(Departamento origem, Departamento destino) {
+    public void removerAresta(int origem, int destino) {
         for (int i = 0; i < arestas.size(); i++) {
             Aresta aresta = arestas.get(i);
-            if ((aresta.origem.equals(origem) && aresta.destino.equals(destino)) ||
-                (aresta.origem.equals(destino) && aresta.destino.equals(origem))) {
+            if ((aresta.origem.equals(this.departamentos.get(origem))) && aresta.destino.equals(this.departamentos.get(destino)) ||
+                (aresta.origem.equals(this.departamentos.get(destino)) && aresta.destino.equals(this.departamentos.get(origem)))) {
                 arestas.remove(i);
                 break;
             }
         }
     }
 
-    /* remove uma aresta entre 
-     * dois departamentos específicos */
-    
     public boolean existeDepartamento(Departamento dep) {
     	if (dep == null || dep.getNome().isBlank() || dep.getNome().isEmpty()) {
     		return false;
     	}
     	
     	for (Departamento aux: departamentos) {
-    		if (aux.getNome().equals(dep.getNome()) && aux.getIndice() == dep.getIndice()) {
+    		if (aux.getNome().equals(dep.getNome()) || aux.getId() == dep.getId()) {
     		return true;
     		}
     	}
     		return false;
     }
 
-    /* busca a aresta com base
-     * na origemeno destino */
-    
-    public Aresta buscarAresta(Departamento origem, Departamento destino) {
-        for (Aresta aresta : arestas) {
-            
-            if ((aresta.origem.equals(origem) && aresta.destino.equals(destino)) ||
-                (aresta.origem.equals(destino) && aresta.destino.equals(origem))) {
-                return aresta; // encontrada
-            }
-        }
-        return null; // não encontrada
-    }
-
-    /* remove departamentos
-     * com base nos indices, e dps as arestas */
-    
     public void removerDepartamento(int indice) {
     	Departamento aux = departamentos.get(indice);
         if (aux != null) {
             departamentos.remove(indice);
 
-            // Remover arestas associadas
+            // Remover arestas associadas ao departamento removido
             List<Aresta> arestasRemover = new ArrayList<>();
             for (Aresta aresta : arestas) {
-                if (aresta.origem.getIndice() == indice || aresta.destino.getIndice() == indice) {
+                if (aresta.origem.getId() == indice || aresta.destino.getId() == indice) {
                     arestasRemover.add(aresta);
                 }
             }
             arestas.removeAll(arestasRemover);
         }
         else 
-        	throw new OperacaoInvalidaException ("O departamento nao existe!");
+        	throw new OperacaoInvalidaException ("O departamento nÃ£o existe");
     }
 
-    /*  calcula a (AGM) a partir de um departamento de início .
-     *  Cria uma nova instância de Grafo chamada agm para armazenar a AGM.
-     *  Começa a construir a AGM adicionando departamentos e arestas
-     *  Retorna a AGM como um novo objeto Grafo.*/ 
+    // algoritmo para encontrar a ï¿½rvore Geradora Mï¿½nima (AGM)
     
     public Grafo calcularAGM(int inicio) {
         Grafo agm = new Grafo();
 
-        agm.adicionarDepartamento(departamentos.get(inicio).nome, departamentos.get(inicio).numPessoas);
+        // Inicializaï¿½ï¿½o: Adicionar nï¿½ inicial ï¿½ AGM
+        agm.adicionarDepartamento(departamentos.get(inicio).nome, departamentos.get(inicio).numPessoas, departamentos.get(inicio).x,
+        		departamentos.get(inicio).y);
 
         while (agm.departamentos.size() < departamentos.size()) {
             Aresta menorAresta = null;
@@ -154,17 +124,13 @@ class Grafo {
                         ? menorAresta.destino
                         : menorAresta.origem;
 
-                agm.adicionarDepartamento(novoDepartamento.getNome(), novoDepartamento.getNumPessoas());
-                agm.adicionarAresta(menorAresta.origem, menorAresta.destino, menorAresta.distancia);
+                agm.adicionarDepartamento(novoDepartamento.getNome(), novoDepartamento.getNumPessoas(), novoDepartamento.x, novoDepartamento.y);
+                agm.adicionarAresta(menorAresta.origem.getId(), menorAresta.destino.getId(), menorAresta.distancia);
             }
         }
 
         return agm;
     }
-    
-    /*Itera sobre todas as arestas e 
-     * acumula as distâncias para obter 
-     * o custo total*/
 
     public double calcularCustoTotal() {
         double custoTotal = 0;
@@ -173,10 +139,6 @@ class Grafo {
         }
         return custoTotal;
     }
-    
-    /*Itera sobre todos os departamentos 
-     * e acumula o número de pessoas 
-     * de cada departamento.*/
 
     public int calcularPessoasAtendidas() {
         int pessoasAtendidas = 0;
@@ -186,9 +148,6 @@ class Grafo {
         return pessoasAtendidas;
     }
     
-    /*imprime informações sobre 
-     * todos os departamentos no grafo*/
-    
     public void imprimirDepartamentos() {
         System.out.println("Departamentos:");
         for (int i = 0; i < departamentos.size(); i++) {
@@ -196,15 +155,21 @@ class Grafo {
         }
     }
     
-    /*imprime informações sobre a
-     *  Árvore Geradora Mínima (AGM)*/
-    
     public void imprimirAGM() {
-        System.out.println("arvore Geradora Mininima:");
+        System.out.println("ï¿½rvore Geradora Mï¿½nima:");
         for (Aresta aresta : arestas) {
             System.out.println(aresta.origem.getNome() + " - " +
                                aresta.destino.getNome() + " : " +
                                aresta.distancia + " km");
         }
     }
+    
+    public List<Departamento> getDepartamentos(){
+		return departamentos;
+    }
+    
+    public List<Aresta> getArestas(){
+		return arestas;
+    }
+    
 }

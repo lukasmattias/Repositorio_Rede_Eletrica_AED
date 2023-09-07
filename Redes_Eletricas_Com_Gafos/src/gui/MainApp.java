@@ -10,12 +10,10 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SistemaRedeEletrica.fxml"));
-        Parent root = loader.load();
-
-        Scene scene = new Scene(root);
+        Parent fxmlLoader = FXMLLoader.load(MainApp.class.getResource("SistemaRedeEletrica.fxml"));
+        Scene scene = new Scene(fxmlLoader);
+        stage.setTitle("Sistema de Rede El�trica da UFRPE");
         stage.setScene(scene);
-        stage.setTitle("Sistema de Rede Eletrica da UFRPE");
         stage.show();
     }
 
