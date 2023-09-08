@@ -2,6 +2,7 @@ package gui;
 
 import java.util.Scanner;
 import exception.OperacaoInvalidaException;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -11,6 +12,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -60,9 +64,8 @@ public class SistemaRedeEletricaController {
             boolean localOcupado = false;
             for (Departamento departamento : grafo.getDepartamentos()) {
                 if (Math.abs(event.getX() - departamento.getX()) <= 15 && Math.abs(event.getY() - departamento.getY()) <= 15) {
-                    // Clique no Departamento (nó), você pode acessar as informações diretamente
-                    System.out.println("Clicou no Departamento: " + departamento.getNome() + " (ID: " + departamento.getId() + ")");
-                    System.out.println("Número de Pessoas: " + departamento.getNumPessoas());
+                    // Acessando as informações do nó caso corresponda à coordenada do clique
+                	mostrarDetalhesDepartamento(departamento);
                     localOcupado = true;
                 }
             }
@@ -72,6 +75,32 @@ public class SistemaRedeEletricaController {
             });
         
     }
+    
+    private void mostrarDetalhesDepartamento(Departamento dep) {
+    	Stage no = new Stage();
+        no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
+        no.setTitle("Informações do Departamento");
+        Button okButton = new Button("OK");
+
+        Label infoLabel = new Label(dep.toString());
+        HBox buttonBox = new HBox(10);
+        buttonBox.getChildren().add(okButton);
+        HBox.setMargin(okButton, new Insets(0, 0, 0, 10));
+        
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(infoLabel, buttonBox);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+        
+        Scene dialogScene = new Scene(vbox, 400, 200);
+        no.setScene(dialogScene);
+ 
+        okButton.setOnAction(e -> {       	
+            no.close(); // Fecha a janela de diálogo
+        });
+        
+        no.showAndWait();
+		
+	}
     
     private void criarNo(double x, double y) {
         Stage no = new Stage();
@@ -187,8 +216,7 @@ public class SistemaRedeEletricaController {
         
         Scene dialogScene = new Scene(vbox, 400, 150);
         no.setScene(dialogScene);  
-        // Consumir a quebra de linha ap�s o n�mero
-        
+
         okButton.setOnAction(e -> {       	
         	try {
                 int indiceOrigem = Integer.parseInt(origemNo.getText());
