@@ -26,4 +26,13 @@ public class Departamento extends No{
 		this.numPessoas = numPessoas;
 	}
     
+	@Override
+	public String toString() {
+	    return
+	           "Índice: " + id + "\n" +
+	           "Nome do departamento: " + nome + "\n" +
+	           "Número de pessoas: " + numPessoas + "\n" +
+	           "Coordenadas(x,y): " + "(" + x + "," + y + ")" + "\n";
+	}
+	
 }
