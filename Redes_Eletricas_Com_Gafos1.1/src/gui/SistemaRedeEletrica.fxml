@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -18,60 +16,8 @@
    <right>
       <Canvas fx:id="canvas" height="401.0" width="800.0" BorderPane.alignment="CENTER" />
    </right>
-   <bottom>
-      <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="573.0" BorderPane.alignment="CENTER_RIGHT">
-        <buttons>
-            <Button fx:id="Relatorio" mnemonicParsing="false" onAction="#gerarRelatorio" prefHeight="25.0" text="Relatório de Custo" textFill="#651168">
-               <tooltip>
-                  <Tooltip text="Gera um reatorio de custos">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-            <Button fx:id="CalAGM" mnemonicParsing="false" onAction="#calcularAGM" prefHeight="22.0" prefWidth="245.0" text="Calcular AGM" textFill="#651168">
-               <tooltip>
-                  <Tooltip text="Calcula a Arvore Geradora Minima" wrapText="true">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-          <Button fx:id="AdcAresta" minWidth="39.0" mnemonicParsing="false" onAction="#adicionarAresta" prefHeight="12.0" prefWidth="100.0" text="Adicionar Aresta" textFill="#651168">
-               <tooltip>
-                  <Tooltip text="Adiciona arestas entre departamentos.">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-            <Button fx:id="RmvAresta" mnemonicParsing="false" onAction="#removerAresta" text="Remover Aresta" textFill="RED">
-               <tooltip>
-                  <Tooltip text="Remove arestas entre departamentos.">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-            <Button fx:id="RmvDepartamento" mnemonicParsing="false" onAction="#removerDepartamento" text="Remover Departamento" textFill="RED">
-               <tooltip>
-                  <Tooltip text="Remove um departamento e suas arestas adjacentes!">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-        </buttons>
-         <BorderPane.margin>
-            <Insets left="20.0" top="15.0" />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="10.0" />
-         </padding>
-      </ButtonBar>
-   </bottom>
    <top>
-      <GridPane prefHeight="79.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+      <GridPane prefHeight="79.0" prefWidth="800.0" style="-fx-background-color: #8C52FF;" BorderPane.alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="10.0" prefWidth="114.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="389.0" minWidth="10.0" prefWidth="140.0" />
@@ -82,15 +28,11 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="restartG" mnemonicParsing="false" onAction="#restartGrafo" prefHeight="0.0" prefWidth="64.0" text="RESTART" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <tooltip>
-                  <Tooltip text="Reinicia toda a rede eletrica!">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Tooltip>
-               </tooltip></Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="UFRPE - REDE ELETRICA" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Button fx:id="restartG" mnemonicParsing="false" onAction="#restartGrafo" prefHeight="0.0" prefWidth="64.0" style="-fx-background-color: #fff;" stylesheets="@SistemaRedeEletrica.css" text="RESTART" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="UFRPE - REDE ELETRICA" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font></Text>
             <ImageView fitHeight="72.0" fitWidth="133.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <image>
                   <Image url="@../imagens/logo.png" />
@@ -99,4 +41,57 @@
          </children>
       </GridPane>
    </top>
+   <bottom>
+      <GridPane prefHeight="51.0" prefWidth="800.0" style="-fx-background-color: #8C52FF;" stylesheets="@SistemaRedeEletrica.css" BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button fx:id="RmvDepartamento" minWidth="140.0" mnemonicParsing="false" onAction="#removerDepartamento" style="-fx-background-color: #fff;" text="Remover Departamento" textFill="RED" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Button fx:id="RmvAresta" minWidth="140.0" mnemonicParsing="false" onAction="#removerAresta" style="-fx-background-color: #fff;" text="Remover Aresta" textFill="RED" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <tooltip>
+                  <Tooltip text="Remove arestas entre departamentos.">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </Button>
+            <Button fx:id="AdcAresta" minWidth="140.0" mnemonicParsing="false" onAction="#adicionarAresta" prefHeight="12.0" prefWidth="100.0" style="-fx-background-color: #fff;" text="Adicionar Aresta" textFill="#651168" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <tooltip>
+                  <Tooltip text="Adiciona arestas entre departamentos.">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </Button>
+            <Button fx:id="CalAGM" minWidth="140.0" mnemonicParsing="false" onAction="#calcularAGM" prefHeight="22.0" prefWidth="245.0" style="-fx-background-color: #fff;" text="Calcular AGM" textFill="#651168" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <tooltip>
+                  <Tooltip text="Calcula a Arvore Geradora Minima" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </Button>
+            <Button fx:id="Relatorio" minWidth="140.0" mnemonicParsing="false" onAction="#gerarRelatorio" prefHeight="25.0" style="-fx-background-color: #fff;" text="Relatório de Custo" textFill="#651168" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <tooltip>
+                  <Tooltip text="Gera um reatorio de custos">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Tooltip>
+               </tooltip>
+            </Button>
+         </children>
+      </GridPane>
+   </bottom>
 </BorderPane>
