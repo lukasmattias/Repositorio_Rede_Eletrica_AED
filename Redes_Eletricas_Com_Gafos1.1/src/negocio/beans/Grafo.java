@@ -8,7 +8,7 @@ import exception.OperacaoInvalidaException;
 public class Grafo {
     List<Departamento> departamentos;
     List<Aresta> arestas;
-    int controleIndice = 0;
+    private int controleIndice = 0;
     private static Grafo instance;
    
     private Grafo() {
@@ -32,10 +32,10 @@ public class Grafo {
      * caso ja exista levanta ema exception*/
     
     public void adicionarDepartamento(String nome, int numPessoas, double x, double y) throws OperacaoInvalidaException {
-    	Departamento novo = new Departamento (nome, numPessoas, x, y, controleIndice);
+    	Departamento novo = new Departamento (nome, numPessoas, x, y, getControleIndice());
     	if (!existeDepartamento(novo)) {
     	departamentos.add(novo);
-        controleIndice++;
+        setControleIndice(getControleIndice() + 1);
     	}
     	else{
     		throw new OperacaoInvalidaException("ERRO: O nome do departamento ja existe.");
@@ -86,10 +86,7 @@ public class Grafo {
      *  especifico existe */
     
     public boolean existeDepartamento(Departamento dep) {
-    	if (dep == null || dep.getNome().isBlank() || dep.getNome().isEmpty()) {
-    		return false;
-    	}
-    	
+
     	for (Departamento aux: departamentos) {
     		if (aux.getNome().equals(dep.getNome()) || aux.getId() == dep.getId()) {
     		return true;
@@ -187,11 +184,27 @@ public class Grafo {
 
     public int calcularPessoasAtendidas() {
         int pessoasAtendidas = 0;
+
         for (Departamento dept : departamentos) {
-            pessoasAtendidas += dept.numPessoas;
+            boolean estaConectado = false;
+            
+            // Verifica se o departamento está conectado por alguma aresta
+            for (Aresta aresta : arestas) {
+                if (aresta.origem.equals(dept) || aresta.destino.equals(dept)) {
+                    estaConectado = true;
+                    break; // Se estiver conectado, não é necessário verificar mais arestas
+                }
+            }
+
+            // Se o departamento estiver conectado, conta as pessoas atendidas
+            if (estaConectado) {
+                pessoasAtendidas += dept.numPessoas;
+            }
         }
+
         return pessoasAtendidas;
     }
+
     
     /*imprime informações sobre 
      * todos os departamentos no grafo*/
@@ -222,5 +235,22 @@ public class Grafo {
     public List<Aresta> getArestas(){
 		return arestas;
     }
+    
+    public void limparDepartamentos() {
+        departamentos.clear();
+    }
+
+    public void limparArestas() {
+        arestas.clear();
+    }
+
+	public int getControleIndice() {
+		return controleIndice;
+	}
+
+	public void setControleIndice(int controleIndice) {
+		this.controleIndice = controleIndice;
+	}
+
     
 }

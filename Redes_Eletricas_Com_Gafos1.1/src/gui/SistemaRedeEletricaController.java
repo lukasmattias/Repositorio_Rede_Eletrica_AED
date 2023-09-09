@@ -50,6 +50,9 @@ public class SistemaRedeEletricaController {
     private Button Relatorio;
     
     @FXML
+    private Button RmvDepartamento;
+    
+    @FXML
     private Canvas canvas;
     
     private GraphicsContext gc;
@@ -173,15 +176,140 @@ public class SistemaRedeEletricaController {
         no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
     }
     
+    
     @FXML
     public void gerarRelatorio() {
-    	
+        Stage no = new Stage();
+        no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
+        no.setTitle("Relatório de Custo e Pessoas Atendidas");
+
+        // Crie um TextArea para exibir o relatório
+        TextArea relatorioTextArea = new TextArea();
+        relatorioTextArea.setEditable(false); // Torna o TextArea somente leitura
+        relatorioTextArea.setWrapText(true); // Habilita a quebra de texto automática
+
+        // Crie um botão para fechar a janela de relatório
+        Button closeButton = new Button("Fechar");
+        closeButton.setOnAction(e -> no.close());
+
+        // Crie o conteúdo da janela do relatório
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(relatorioTextArea, closeButton);
+        vbox.setPadding(new Insets(10));
+
+        // Crie o cenário da janela do relatório
+        Scene dialogScene = new Scene(vbox, 400, 300);
+        no.setScene(dialogScene);
+
+        // Calcule o custo total e as pessoas atendidas
+        double custoTotal = grafo.calcularCustoTotal();
+        int pessoasAtendidas = grafo.calcularPessoasAtendidas();
+
+        // Construa o relatório
+        String relatorio = "Custo Total: " + custoTotal + " km\n";
+        relatorio += "Pessoas Atendidas: " + pessoasAtendidas + " pessoas\n";
+
+        // Exiba o relatório no TextArea
+        relatorioTextArea.setText(relatorio);
+
+        // Exiba a janela de relatório
+        no.showAndWait(); // Exibe a janela de relatório e aguarda sua conclusão
     }
+
+    
+    
+    @FXML
+    void removerDepartamento() {
+        Stage no = new Stage();
+        no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
+        no.setTitle("Remover Departamento");
+
+        GridPane grid = new GridPane(); // Organizando as labels e textfield em um Gridpane
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10, 10, 10, 10));
+
+        Label indiceDep = new Label("Índice do departamento: ");
+        TextField indiceDepartamento = new TextField();
+
+        Button okButton = new Button("OK");
+
+        grid.add(indiceDep, 0, 0); // Adicionando as labels e textfield no Gridpane
+        grid.add(indiceDepartamento, 1, 0);
+
+        HBox buttonBox = new HBox(10);
+        buttonBox.getChildren().add(okButton);
+        HBox.setMargin(okButton, new Insets(0, 0, 0, 10));
+
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(grid, buttonBox);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+
+        Scene dialogScene = new Scene(vbox, 400, 150);
+        no.setScene(dialogScene);
+
+        okButton.setOnAction(e -> {
+            try {
+                int indiceDepartamentoParaExcluir = Integer.parseInt(indiceDepartamento.getText());
+
+                // Remova o departamento do grafo
+                grafo.removerDepartamento(indiceDepartamentoParaExcluir);
+
+                // Atualize o desenho no Canvas
+                atualizarCanvas();
+            } catch (NumberFormatException er) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro");
+                alert.setHeaderText("Índice inválido");
+                alert.setContentText("Por favor, insira um índice válido para o departamento.");
+                alert.showAndWait();
+            }
+
+            no.close(); // Fecha a janela de diálogo
+        });
+
+        no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
+    }
+
     
     @FXML
     public void calcularAGM() {
-    	
+        Stage no = new Stage();
+        no.initModality(Modality.APPLICATION_MODAL);
+        no.setTitle("Árvore Geradora Mínima");
+
+        // Calcular a Árvore Geradora Mínima (AGM)
+        Grafo agm = grafo.calcularAGM(0); // Você pode escolher um departamento de início (índice 0 neste exemplo)
+
+        // Criar uma TextArea para mostrar as informações da AGM
+        TextArea agmTextArea = new TextArea();
+        agmTextArea.setEditable(false);
+        agmTextArea.setWrapText(true);
+
+        // Construir a string com as informações da AGM
+        StringBuilder agmInfo = new StringBuilder();
+        agmInfo.append("Arestas na Árvore Geradora Mínima:\n");
+
+        for (Aresta aresta : agm.getArestas()) {
+            agmInfo.append(aresta.getOrigem().getNome()).append(" - ").append(aresta.getDestino().getNome()).append(" : ")
+                   .append(aresta.getDistancia()).append(" km\n");
+        }
+
+        // Configurar o conteúdo da TextArea
+        agmTextArea.setText(agmInfo.toString());
+
+        // Criar um VBox para organizar os elementos na janela
+        VBox vbox = new VBox(agmTextArea);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+
+        // Criar a cena da janela de diálogo
+        Scene dialogScene = new Scene(vbox, 400, 300);
+        no.setScene(dialogScene);
+
+        // Exibir a janela de diálogo
+        no.showAndWait();
     }
+
     
     @FXML
     public void removerAresta() {
@@ -354,5 +482,21 @@ public class SistemaRedeEletricaController {
             gc.setFill(Color.BLACK);
         }
     }
+    
+    @FXML
+    void restartGrafo() {
+        // Limpa a lista de departamentos e arestas
+        grafo.limparDepartamentos();
+        grafo.limparArestas();
+        
+        // Reinicia o contador de departamentos
+        grafo.setControleIndice(0);
+
+        // Limpa o canvas e atualiza os índices dos departamentos
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        atualizarCanvas();
+    }
+
+
     
 }
