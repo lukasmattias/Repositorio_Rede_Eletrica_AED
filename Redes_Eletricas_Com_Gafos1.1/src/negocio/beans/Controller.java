@@ -68,7 +68,7 @@ public class Controller {
                 case 4:
                     System.out.println("\nDepartamentos e �ndices:");
                     grafo.imprimirDepartamentos();
-                    System.out.print("\nDigite o �ndice do departamento inicial para calcular a AGM: ");
+                    System.out.print("\nDigite o  para calcular a AGM: ");
                     int departamentoInicial = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
                     Grafo agm = grafo.calcularAGM(departamentoInicial);
