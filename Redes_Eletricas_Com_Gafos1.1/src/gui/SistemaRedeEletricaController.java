@@ -2,6 +2,9 @@ package gui;
 
 import java.util.List;
 import java.util.Scanner;
+
+import com.sun.javafx.collections.MappingChange.Map;
+
 import exception.OperacaoInvalidaException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -32,10 +35,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SistemaRedeEletricaController {
+	
 	private Stage stage;
     private Scene scene;
     private Parent root;
     Grafo grafo = Grafo.getInstance();
+    private GraphicsContext gc;
+    private double escala = 1.0;
+    
+    // -----> ELEMENTOS DA TELA <---------
     
     @FXML
     private Button AdcNo;
@@ -50,7 +58,7 @@ public class SistemaRedeEletricaController {
     private Button CalAGM;
     
     @FXML
-    private Button voltar;
+    private Button btnBusca;
     
     @FXML
     private Button Relatorio;
@@ -61,8 +69,7 @@ public class SistemaRedeEletricaController {
     @FXML
     private Canvas canvas;
     
-    private GraphicsContext gc;
-    private double escala = 1.0;
+    //-----> INICIALIZANDO O CANVAS <---------
     
     public void initialize() {
     	gc = canvas.getGraphicsContext2D();
@@ -74,7 +81,7 @@ public class SistemaRedeEletricaController {
             boolean localOcupado = false;
             for (Departamento departamento : grafo.getDepartamentos()) {
                 if (Math.abs(event.getX() - departamento.getX()) <= 15 && Math.abs(event.getY() - departamento.getY()) <= 15) {
-                    // Acessando as informações do nó caso corresponda à coordenada do clique
+                    // Acessando as informaÃ§Ãµes do nÃ³ caso corresponda Ã  coordenada do clique
                 	mostrarDetalhesDepartamento(departamento);
                     localOcupado = true;
                 }
@@ -86,39 +93,43 @@ public class SistemaRedeEletricaController {
         
     }
     
+    //-----> MOSTRA DETALHES SOBRE OS DEP <---------
+    
     private void mostrarDetalhesDepartamento(Departamento dep) {
     	Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
-        no.setTitle("Informações do Departamento");
+        no.setTitle("Informacoes do Departamento");
         
-        // TextArea para exibir o relatório
+        // TextArea para exibir o relatorio
         TextArea detalhesTextArea = new TextArea();
         detalhesTextArea.setEditable(false); // Torna o TextArea somente leitura
-        detalhesTextArea.setWrapText(true); // Habilita a quebra de texto automática
+        detalhesTextArea.setWrapText(true); // Habilita a quebra de texto automÃ¡tica
 
-        // Botão para fechar a janela de relatório
+        // BotÃ£o para fechar a janela de relatÃ³rio
         Button closeButton = new Button("Fechar");
         closeButton.setOnAction(e -> no.close());
 
-        // Conteúdo da janela do relatório
+        // ConteÃºdo da janela do relatÃ³rio
         VBox vbox = new VBox(10);
         vbox.getChildren().addAll(detalhesTextArea, closeButton);
         vbox.setPadding(new Insets(10));
 
-        // Cenário da janela do relatório
+        // CenÃ¡rio da janela do relatÃ³rio
         Scene dialogScene = new Scene(vbox, 400, 300);
         no.setScene(dialogScene);
 
-        // Construção do relatório
+        // ConstruÃ§Ã£o do relatÃ³rio
         String relatorio = dep.toString();
 
-        // Exibindo o relatório no TextArea
+        // Exibindo o relatÃ³rio no TextArea
         detalhesTextArea.setText(relatorio);
         
-        // Exiba a janela de relatório
-        no.showAndWait(); // Exibe a janela de relatório e aguarda sua conclusão
+        // Exiba a janela de relatÃ³rio
+        no.showAndWait(); // Exibe a janela de relatÃ³rio e aguarda sua conclusÃ£o
 		
 	}
+    
+    //-----> CRIA OS NOS <---------
     
     private void criarNo(double x, double y) {
         Stage no = new Stage();
@@ -132,7 +143,7 @@ public class SistemaRedeEletricaController {
 
         Label nome = new Label("Nome do departamento:");
         TextField nomeDepartamento = new TextField();
-        Label numPessoas = new Label("Número de pessoas:");
+        Label numPessoas = new Label("Numero de pessoas:");
         TextField pessoasDepartamento = new TextField();
         Button okButton = new Button("OK");
         
@@ -160,46 +171,57 @@ public class SistemaRedeEletricaController {
         	}
         	catch (OperacaoInvalidaException a) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Departamento não adicionado.");
+                alert.setTitle("Departamento nao adicionado.");
                 alert.setHeaderText(a.getMessage());
                 alert.showAndWait();
         	}
         	catch (NumberFormatException er) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
         	    alert.setTitle("Erro");
-        	    alert.setHeaderText("Número de pessoas inválido");
-        	    alert.setContentText("Por favor, insira um número válido para o número de pessoas.");
+        	    alert.setHeaderText("Numero de pessoas invalido");
+        	    alert.setContentText("Por favor, insira um numero valido para o numero de pessoas.");
         	    alert.showAndWait();
         	}
             
-            no.close(); // Fecha a janela de diálogo
+            no.close(); // Fecha a janela de diÃ¡logo
         });
 
-        no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
+        no.showAndWait(); // Exibe a janela de diÃ¡logo e aguarda sua conclusÃ£o
     }
     
+    //-----> GERA ORELATORIO DE CUSTO <---------
     
     @FXML
     public void gerarRelatorio() {
+    	
+        if (grafo.getDepartamentos().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Grafo vazio");
+            alert.setContentText("O grafo esta vazio. Adicione departamentos e arestas para gerar o relatorio!");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+        
         Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
-        no.setTitle("Relatório de Custo e Pessoas Atendidas");
+        no.setTitle("Relatorio de Custo e Pessoas Atendidas");
 
-        // TextArea para exibir o relatório
+        // TextArea para exibir o relatÃ³rio
         TextArea relatorioTextArea = new TextArea();
         relatorioTextArea.setEditable(false); // Torna o TextArea somente leitura
-        relatorioTextArea.setWrapText(true); // Habilita a quebra de texto automática
+        relatorioTextArea.setWrapText(true); // Habilita a quebra de texto automÃ¡tica
 
-        // Botão para fechar a janela de relatório
+        // BotÃ£o para fechar a janela de relatÃ³rio
         Button closeButton = new Button("Fechar");
         closeButton.setOnAction(e -> no.close());
 
-        // Conteúdo da janela do relatório
+        // ConteÃºdo da janela do relatÃ³rio
         VBox vbox = new VBox(10);
         vbox.getChildren().addAll(relatorioTextArea, closeButton);
         vbox.setPadding(new Insets(10));
 
-        // Cenário da janela do relatório
+        // CenÃ¡rio da janela do relatÃ³rio
         Scene dialogScene = new Scene(vbox, 400, 300);
         no.setScene(dialogScene);
 
@@ -207,21 +229,31 @@ public class SistemaRedeEletricaController {
         double custoTotal = grafo.calcularCustoTotal();
         int pessoasAtendidas = grafo.calcularPessoasAtendidas();
 
-        // Construção do relatório
+        // ConstruÃ§Ã£o do relatÃ³rio
         String relatorio = "Custo Total: " + custoTotal + " km\n";
         relatorio += "Pessoas Atendidas: " + pessoasAtendidas + " pessoas\n";
 
-        // Exibindo o relatório no TextArea
+        // Exibindo o relatÃ³rio no TextArea
         relatorioTextArea.setText(relatorio);
 
-        // Exiba a janela de relatório
-        no.showAndWait(); // Exibe a janela de relatório e aguarda sua conclusão
+        // Exiba a janela de relatÃ³rio
+        no.showAndWait(); // Exibe a janela de relatÃ³rio e aguarda sua conclusÃ£o
     }
 
-    
+    //-----> REMOVE O DEPARTAMENTO <---------
     
     @FXML
     void removerDepartamento() {
+    	
+        if (grafo.getDepartamentos().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Grafo vazio");
+            alert.setContentText("O grafo esta vazio. Adicione departamentos.");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+        
         Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
         no.setTitle("Remover Departamento");
@@ -231,7 +263,7 @@ public class SistemaRedeEletricaController {
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
 
-        Label indiceDep = new Label("Índice do departamento: ");
+        Label indiceDep = new Label("indice do departamento: ");
         TextField indiceDepartamento = new TextField();
 
         Button okButton = new Button("OK");
@@ -263,27 +295,38 @@ public class SistemaRedeEletricaController {
             } catch (NumberFormatException er) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
-                alert.setHeaderText("Índice inválido");
-                alert.setContentText("Por favor, insira um índice válido para o departamento.");
+                alert.setHeaderText("indice invalido");
+                alert.setContentText("Por favor, insira um idice valido para o departamento.");
                 alert.showAndWait();
             }
 
-            no.close(); // Fecha a janela de diálogo
+            no.close(); // Fecha a janela de diÃ¡logo
         });
 
-        no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
+        no.showAndWait(); // Exibe a janela de diÃ¡logo e aguarda sua conclusÃ£o
     }
 
     
+    //-----> CALCULA AGM <---------
+    
     @FXML
     public void calcularAGM() {
+        if (grafo.getDepartamentos().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Grafo vazio!!");
+            alert.setContentText("O grafo está vazio. Adicione departamentos e arestas antes de calcular a Árvore Geradora Mínima.");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+
         Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL);
         no.setTitle("Árvore Geradora Mínima");
 
         // Calcular a Árvore Geradora Mínima (AGM)
         Grafo agm = grafo.calcularAGM(0); // Você pode escolher um departamento de início (índice 0 neste exemplo)
-        
+
         GridPane grid = new GridPane(); // Organizando as labels e textfield em um Gridpane
         grid.setHgap(10);
         grid.setVgap(10);
@@ -297,7 +340,6 @@ public class SistemaRedeEletricaController {
         grid.add(indiceDepartamento, 1, 0);
         grid.add(okButton, 2, 0);
 
-  
         VBox vbox = new VBox(10);
         vbox.getChildren().addAll(grid);
         vbox.setPadding(new Insets(10, 10, 10, 10));
@@ -308,24 +350,22 @@ public class SistemaRedeEletricaController {
         okButton.setOnAction(e -> {
             try {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                voltar.setVisible(true);
-                voltar.setDisable(false);
                 List<Aresta> arestasForaAGM = grafo.getArestas();
-                
+
                 for (Aresta aresta : grafo.getArestas()) {
-                	gc = canvas.getGraphicsContext2D();
+                    gc = canvas.getGraphicsContext2D();
                     gc.setStroke(Color.GREY);
                     gc.setLineWidth(1.0);
                     gc.strokeLine(aresta.getOrigem().getX(), aresta.getOrigem().getY(), aresta.getDestino().getX(), aresta.getDestino().getY());
-                    }
-                
+                }
+
                 for (Aresta aresta : agm.getArestas()) {
-                	gc = canvas.getGraphicsContext2D();
+                    gc = canvas.getGraphicsContext2D();
                     gc.setStroke(Color.PURPLE);
                     gc.setLineWidth(2.0);
                     gc.strokeLine(aresta.getOrigem().getX(), aresta.getOrigem().getY(), aresta.getDestino().getX(), aresta.getDestino().getY());
                     arestasForaAGM.remove(aresta);
-                    
+
                     gc.setStroke(Color.BLACK); // Cor do contorno
                     gc.setLineWidth(3.5); // Largura do contorno
                     gc.setLineDashes(0); // Padrão de traço (0 significa contínuo)
@@ -333,35 +373,33 @@ public class SistemaRedeEletricaController {
                     gc.setLineJoin(StrokeLineJoin.ROUND); // Uniões do traço arredondadas
 
                     // Desenhar o contorno do texto
-                    gc.strokeText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX())/2), (aresta.getOrigem().getY() + aresta.getDestino().getY())/2);
-                    
+                    gc.strokeText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX()) / 2), (aresta.getOrigem().getY() + aresta.getDestino().getY()) / 2);
+
                     // Posicionando a informação do peso da aresta no canvas
                     gc.setFill(Color.WHITE);
-                    gc.fillText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX())/2), (aresta.getOrigem().getY() + aresta.getDestino().getY())/2);
+                    gc.fillText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX()) / 2), (aresta.getOrigem().getY() + aresta.getDestino().getY()) / 2);
                     gc.setTextAlign(TextAlignment.CENTER);
                     gc.setTextBaseline(javafx.geometry.VPos.CENTER);
                 }
-                
-                
+
                 for (Departamento dep : grafo.getDepartamentos()) {
-                	gc = canvas.getGraphicsContext2D();
+                    gc = canvas.getGraphicsContext2D();
                     gc.setFill(Color.BLACK);
                     // Configurando o alinhamento do texto para centralizar no ponto
                     gc.setTextAlign(TextAlignment.CENTER);
                     gc.setTextBaseline(javafx.geometry.VPos.CENTER);
-            		// Desenhando um círculo no local do clique
-                    double raio = 10; // Tamanho do ponto 
+                    // Desenhando um círculo no local do clique
+                    double raio = 10; // Tamanho do ponto
                     gc.fillOval(dep.getX() - raio, dep.getY() - raio, raio * 2, raio * 2);
                     gc.setFill(Color.WHITE);
                     // Escreva texto dentro do ponto criado
-                    String texto =  String.valueOf(dep.getId());
+                    String texto = String.valueOf(dep.getId());
                     gc.fillText(texto, dep.getX(), dep.getY());
                     gc.setFill(Color.BLACK);
                 }
-                
-                
+
                 // Atualize o desenho no Canvas
-               
+
             } catch (NumberFormatException er) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
@@ -376,9 +414,58 @@ public class SistemaRedeEletricaController {
         no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
     }
 
+    // -----> EXIBE RESULTADO DA BUSCA <---------
+    
+    @FXML
+    void exibirResultadoDaBusca() {
+        if (grafo.getDepartamentos().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Grafo Vazio!!");
+            alert.setContentText("Adicione Departamentos e crie Arestas!");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+
+        Stage no = new Stage();
+        no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
+        no.setTitle("Resutado da busca!");
+
+        // TextArea para exibir o relatório
+        TextArea relatorioTextArea = new TextArea();
+        relatorioTextArea.setEditable(false); // Torna o TextArea somente leitura
+        relatorioTextArea.setWrapText(true); // Habilita a quebra de texto automática
+
+        // Botão para fechar a janela de relatório
+        Button closeButton = new Button("Fechar");
+        closeButton.setOnAction(e -> no.close());
+
+        // Conteúdo da janela do relatório
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(relatorioTextArea, closeButton);
+        vbox.setPadding(new Insets(10));
+
+        // Cenário da janela do relatório
+        Scene dialogScene = new Scene(vbox, 400, 300);
+        no.setScene(dialogScene);
+
+        // Exiba a janela de relatório
+        no.showAndWait();
+    }
+
+    //-----> REMOVE ARESTAS <---------
     
     @FXML
     public void removerAresta() {
+        if (grafo.getArestas().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Sem Arestas!!");
+            alert.setContentText("Adicione Departamentos e crie Arestas!");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+        
     	Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
         no.setTitle("Remover aresta");
@@ -388,9 +475,9 @@ public class SistemaRedeEletricaController {
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
 
-        Label origem = new Label("índice do primeiro nó: ");
+        Label origem = new Label("Idice do primeiro no: ");
         TextField origemNo = new TextField();
-        Label destino = new Label("Índice do segundo nó: ");
+        Label destino = new Label("Indice do segundo no: ");
         TextField destinoNo = new TextField();
         
         Button okButton = new Button("OK");
@@ -421,33 +508,43 @@ public class SistemaRedeEletricaController {
         			 atualizarCanvas();
         		}
                 else {
-                	throw new OperacaoInvalidaException("Não há aresta entre os dois nós.");
+                	throw new OperacaoInvalidaException("Nao ha aresta entre os dois nos!");
                 }
                 }
         	catch (OperacaoInvalidaException a) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Aresta não adicionada.");
+                alert.setTitle("Aresta nao adicionada!");
                 alert.setHeaderText(a.getMessage());
                 alert.showAndWait();
         	}
         	catch (NumberFormatException er) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
         	    alert.setTitle("Erro");
-        	    alert.setHeaderText("Número de pessoas inválido");
-        	    alert.setContentText("Por favor, insira um número válido para o número de pessoas.");
+        	    alert.setHeaderText("Numero de pessoas invalido");
+        	    alert.setContentText("Por favor, insira um numero valido para o numero de pessoas.");
         	    alert.showAndWait();
         	}
             
-            no.close(); // Fecha a janela de diálogo
+            no.close(); // Fecha a janela de diÃ¡logo
         });
 
-        no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
+        no.showAndWait(); // Exibe a janela de diÃ¡logo e aguarda sua conclusÃ£o
     }
     
-    
+    //-----> ADICIONA ARESTAS <---------
     
     @FXML
     public void adicionarAresta() {
+    	
+        if (grafo.getDepartamentos().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Grafo vazio!!");
+            alert.setContentText("O grafo esta vazio. Adicione departamentos.");
+            alert.showAndWait();
+            return; // Retorna sem fazer nada se o grafo estiver vazio
+        }
+        
     	Stage no = new Stage();
         no.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela principal
         no.setTitle("Nova aresta");
@@ -457,11 +554,11 @@ public class SistemaRedeEletricaController {
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
 
-        Label origem = new Label("índice de origem: ");
+        Label origem = new Label("Ã­ndice de origem: ");
         TextField origemAresta = new TextField();
-        Label destino = new Label("Índice de destino: ");
+        Label destino = new Label("Ã�ndice de destino: ");
         TextField destinoAresta = new TextField();
-        Label distancia = new Label("Distância entre origem e destino: ");
+        Label distancia = new Label("DistÃ¢ncia entre origem e destino: ");
         TextField pesoAresta = new TextField();
         Button okButton = new Button("OK");
         
@@ -489,33 +586,35 @@ public class SistemaRedeEletricaController {
                 int indiceDestino = Integer.parseInt(destinoAresta.getText());
                 double pesoArestaDouble = Double.parseDouble(pesoAresta.getText());
                 if (grafo.existeAresta(indiceOrigem, indiceDestino)) {
-        			throw new OperacaoInvalidaException("Já existe uma aresta entre os dois nós.");
+        			throw new OperacaoInvalidaException("JÃ¡ existe uma aresta entre os dois nÃ³s.");
         		}
                 grafo.adicionarAresta(indiceOrigem, indiceDestino, pesoArestaDouble);
                 atualizarCanvas();
                 }
         	catch (OperacaoInvalidaException a) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Aresta não adicionada.");
+                alert.setTitle("Aresta nÃ£o adicionada.");
                 alert.setHeaderText(a.getMessage());
                 alert.showAndWait();
         	}
         	catch (NumberFormatException er) {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
         	    alert.setTitle("Erro");
-        	    alert.setHeaderText("Apenas números inteiros são permitidos.");
-        	    alert.setContentText("Por favor, insira um número inteiro válido.");
+        	    alert.setHeaderText("Apenas nÃºmeros inteiros sÃ£o permitidos.");
+        	    alert.setContentText("Por favor, insira um nÃºmero inteiro vÃ¡lido.");
         	    alert.showAndWait();
         	}
             
-            no.close(); // Fecha a janela de diálogo
+            no.close(); // Fecha a janela de diÃ¡logo
         });
 
-        no.showAndWait(); // Exibe a janela de diálogo e aguarda sua conclusão
+        no.showAndWait(); // Exibe a janela de diÃ¡logo e aguarda sua conclusÃ£o
         
         
 
     }
+    
+    //-----> ATUALIZA CANVAS <---------
     
     private void atualizarCanvas() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -528,14 +627,14 @@ public class SistemaRedeEletricaController {
             
             gc.setStroke(Color.BLACK); // Cor do contorno
             gc.setLineWidth(3.5); // Largura do contorno
-            gc.setLineDashes(0); // Padrão de traço (0 significa contínuo)
-            gc.setLineCap(StrokeLineCap.ROUND); // Extremidades do traço arredondadas
-            gc.setLineJoin(StrokeLineJoin.ROUND); // Uniões do traço arredondadas
+            gc.setLineDashes(0); // PadrÃ£o de traÃ§o (0 significa contÃ­nuo)
+            gc.setLineCap(StrokeLineCap.ROUND); // Extremidades do traÃ§o arredondadas
+            gc.setLineJoin(StrokeLineJoin.ROUND); // UniÃµes do traÃ§o arredondadas
 
             // Desenhar o contorno do texto
             gc.strokeText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX())/2), (aresta.getOrigem().getY() + aresta.getDestino().getY())/2);
             
-            // Posicionando a informação do peso da aresta no canvas
+            // Posicionando a informaÃ§Ã£o do peso da aresta no canvas
             gc.setFill(Color.WHITE);
             gc.fillText(String.valueOf(aresta.getDistancia() + " km"), ((aresta.getOrigem().getX() + aresta.getDestino().getX())/2), (aresta.getOrigem().getY() + aresta.getDestino().getY())/2);
             gc.setTextAlign(TextAlignment.CENTER);
@@ -548,7 +647,7 @@ public class SistemaRedeEletricaController {
             // Configurando o alinhamento do texto para centralizar no ponto
             gc.setTextAlign(TextAlignment.CENTER);
             gc.setTextBaseline(javafx.geometry.VPos.CENTER);
-    		// Desenhando um círculo no local do clique
+    		// Desenhando um cÃ­rculo no local do clique
             double raio = 10; // Tamanho do ponto 
             gc.fillOval(dep.getX() - raio, dep.getY() - raio, raio * 2, raio * 2);
             gc.setFill(Color.WHITE);
@@ -559,6 +658,8 @@ public class SistemaRedeEletricaController {
         }
     }
     
+    //-----> REINICIA O GRAFO <---------
+    
     @FXML
     void restartGrafo() {
         // Limpa a lista de departamentos e arestas
@@ -568,16 +669,11 @@ public class SistemaRedeEletricaController {
         // Reinicia o contador de departamentos
         grafo.setControleIndice(0);
 
-        // Limpa o canvas e atualiza os índices dos departamentos
+        // Limpa o canvas e atualiza os Ã­ndices dos departamentos
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         atualizarCanvas();
     }
     
-    @FXML
-    void voltarGrafo() {
-    	
-    }
-
 
     
 }

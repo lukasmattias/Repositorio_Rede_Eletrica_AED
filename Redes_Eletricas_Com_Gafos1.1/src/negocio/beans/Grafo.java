@@ -145,41 +145,60 @@ public class Grafo {
      *  Comeï¿½a a construir a AGM adicionando departamentos e arestas
      *  Retorna a AGM como um novo objeto Grafo.*/
     
-    public Grafo calcularAGM(int inicio) {
+    public Grafo calcularAGM(int indiceDepartamentoInicial) {
         Grafo agm = new Grafo();
-        
-        agm.adicionarDepartamento(departamentos.get(inicio).nome, departamentos.get(inicio).numPessoas, departamentos.get(inicio).x,
-        		departamentos.get(inicio).y);
+        List<Departamento> verticesAGM = new ArrayList<>();
+        List<Aresta> arestasAGM = new ArrayList<>();
 
-        while (agm.departamentos.size() < departamentos.size()) {
+        // Adicione o departamento inicial à AGM
+        Departamento departamentoInicial = departamentos.get(indiceDepartamentoInicial);
+        verticesAGM.add(departamentoInicial);
+
+        while (verticesAGM.size() < departamentos.size()) {
             Aresta menorAresta = null;
+            double menorDistancia = Double.POSITIVE_INFINITY;
 
-            for (Aresta aresta : arestas) {
-                if (agm.existeDepartamento(aresta.origem) ^ agm.existeDepartamento(aresta.destino)) {
-                    if (menorAresta == null || aresta.distancia < menorAresta.distancia) {
-                        menorAresta = aresta;
+            // Encontre a aresta de menor peso que liga um vértice da AGM a um vértice fora da AGM
+            for (Departamento verticeAGM : verticesAGM) {
+                for (Departamento verticeForaAGM : departamentos) {
+                    if (!verticesAGM.contains(verticeForaAGM)) {
+                        Aresta aresta = encontrarAresta(verticeAGM, verticeForaAGM);
+                        if (aresta != null && aresta.getDistancia() < menorDistancia) {
+                            menorAresta = aresta;
+                            menorDistancia = aresta.getDistancia();
+                        }
                     }
                 }
             }
 
             if (menorAresta != null) {
-                Departamento novoDepartamento = null;
-                if (agm.existeDepartamento(menorAresta.origem)) {
-                	novoDepartamento = menorAresta.destino;
-                	menorAresta.origem = agm.buscarDepartamentoPorNome(menorAresta.origem.getNome());
-                }
-                else {
-                	novoDepartamento = menorAresta.origem;
-                	menorAresta.destino = agm.buscarDepartamentoPorNome(menorAresta.destino.getNome());
-                }
-                
-                agm.adicionarDepartamento(novoDepartamento.getNome(), novoDepartamento.getNumPessoas(), novoDepartamento.x, novoDepartamento.y);
-                agm.adicionarAresta(menorAresta.origem.getId(), menorAresta.destino.getId(), menorAresta.distancia);
+                // Adicione a menor aresta à AGM
+                arestasAGM.add(menorAresta);
+                verticesAGM.add(menorAresta.getDestino());
+            } else {
+                // Não foi possível encontrar uma aresta válida, o grafo pode estar desconectado
+                break;
             }
         }
 
+        // Defina os vértices e arestas da AGM no novo grafo
+        agm.setDepartamentos(verticesAGM);
+        agm.setArestas(arestasAGM);
+
         return agm;
     }
+
+    private Aresta encontrarAresta(Departamento origem, Departamento destino) {
+        for (Aresta aresta : arestas) {
+            if ((aresta.getOrigem() == origem && aresta.getDestino() == destino) ||
+                (aresta.getOrigem() == destino && aresta.getDestino() == origem)) {
+                return aresta;
+            }
+        }
+        return null;
+    }
+
+
 
     /*Itera sobre todas as arestas e 
      * acumula as distï¿½ncias para obter 
@@ -276,5 +295,13 @@ public class Grafo {
 		}
 	}
 
+	
+	public void setDepartamentos(List<Departamento> departamentos) {
+        this.departamentos = departamentos;
+    }
+
+    public void setArestas(List<Aresta> arestas) {
+        this.arestas = arestas;
+    }
     
 }
