@@ -1,7 +1,10 @@
 package negocio.beans;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import exception.OperacaoInvalidaException;
 
@@ -145,53 +148,52 @@ public class Grafo {
      *  Comeï¿½a a construir a AGM adicionando departamentos e arestas
      *  Retorna a AGM como um novo objeto Grafo.*/
     
-    public Grafo calcularAGM(int indiceDepartamentoInicial) {
+    public Grafo calcularAGM() {
         Grafo agm = new Grafo();
-        List<Departamento> verticesAGM = new ArrayList<>();
-        List<Aresta> arestasAGM = new ArrayList<>();
 
-        // Adicione o departamento inicial à AGM
-        Departamento departamentoInicial = departamentos.get(indiceDepartamentoInicial);
-        verticesAGM.add(departamentoInicial);
+        // Verifica se hÃ¡ departamentos no grafo original
+        if (departamentos.isEmpty()) {
+            return agm;
+        }
 
-        while (verticesAGM.size() < departamentos.size()) {
-            Aresta menorAresta = null;
-            double menorDistancia = Double.POSITIVE_INFINITY;
+        // Adiciona o primeiro departamento do grafo original Ã  AGM
+        Departamento primeiroDepartamento = departamentos.get(0);
+        agm.departamentos.add(primeiroDepartamento);
 
-            // Encontre a aresta de menor peso que liga um vértice da AGM a um vértice fora da AGM
-            for (Departamento verticeAGM : verticesAGM) {
-                for (Departamento verticeForaAGM : departamentos) {
-                    if (!verticesAGM.contains(verticeForaAGM)) {
-                        Aresta aresta = encontrarAresta(verticeAGM, verticeForaAGM);
+        while (agm.getDepartamentos().size() < departamentos.size()) {
+            double menorDistancia = Double.MAX_VALUE;
+            Departamento departamentoNaAGM = null;
+            Departamento novoDepartamento = null;
+
+            // Encontra a aresta de menor peso que conecta um vÃ©rtice na AGM a um vÃ©rtice fora da AGM
+            for (Departamento depNaAGM : agm.getDepartamentos()) {
+                for (Departamento depForaAGM : departamentos) {
+                    if (!agm.existeDepartamento(depForaAGM)) {
+                        Aresta aresta = buscarAresta(depNaAGM, depForaAGM);
                         if (aresta != null && aresta.getDistancia() < menorDistancia) {
-                            menorAresta = aresta;
                             menorDistancia = aresta.getDistancia();
+                            departamentoNaAGM = depNaAGM;
+                            novoDepartamento = depForaAGM;
                         }
                     }
                 }
             }
 
-            if (menorAresta != null) {
-                // Adicione a menor aresta à AGM
-                arestasAGM.add(menorAresta);
-                verticesAGM.add(menorAresta.getDestino());
-            } else {
-                // Não foi possível encontrar uma aresta válida, o grafo pode estar desconectado
-                break;
-            }
+            // Adiciona o novo departamento Ã  AGM
+            agm.departamentos.add(novoDepartamento);
+            agm.adicionarAresta(departamentoNaAGM.getId(), novoDepartamento.getId(), menorDistancia);
         }
-
-        // Defina os vértices e arestas da AGM no novo grafo
-        agm.setDepartamentos(verticesAGM);
-        agm.setArestas(arestasAGM);
 
         return agm;
     }
 
-    private Aresta encontrarAresta(Departamento origem, Departamento destino) {
+    
+
+
+    private Aresta buscarAresta(Departamento origem, Departamento destino) {
         for (Aresta aresta : arestas) {
-            if ((aresta.getOrigem() == origem && aresta.getDestino() == destino) ||
-                (aresta.getOrigem() == destino && aresta.getDestino() == origem)) {
+            if ((aresta.getOrigem().equals(origem) && aresta.getDestino().equals(destino)) ||
+                (aresta.getOrigem().equals(destino) && aresta.getDestino().equals(origem))) {
                 return aresta;
             }
         }
@@ -255,7 +257,7 @@ public class Grafo {
      *  ï¿½rvore Geradora Mï¿½nima (AGM)*/
     
     public void imprimirAGM() {
-    	Grafo agm = calcularAGM(0);
+    	Grafo agm = calcularAGM();
         System.out.println("arvore Geradora Minima:");
         for (Aresta aresta : agm.getArestas()) {
             System.out.println(aresta.origem.getNome() + " - " +

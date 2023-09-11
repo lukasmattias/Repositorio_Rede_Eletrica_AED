@@ -71,7 +71,7 @@ public class Controller {
                     System.out.print("\nDigite o  para calcular a AGM: ");
                     int departamentoInicial = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha ap�s o n�mero
-                    Grafo agm = grafo.calcularAGM(departamentoInicial);
+                    Grafo agm = grafo.calcularAGM();
                     System.out.println("\n�rvore Geradora M�nima:");
                     agm.imprimirAGM();
                     System.out.println("Custo Total da AGM: " + agm.calcularCustoTotal());

@@ -1,6 +1,6 @@
 package negocio.beans;
 
-public class Aresta {
+public class Aresta implements Comparable<Aresta> {
 	Departamento origem, destino;
     double distancia;
 
@@ -34,5 +34,17 @@ public class Aresta {
 		this.distancia = distancia;
 	}
     
-    
+    @Override
+    public int compareTo(Aresta outraAresta) {
+        // Implemente a lógica de comparação aqui.
+        // Você deve comparar as distâncias das arestas.
+        // Por exemplo, se desejar uma ordem crescente com base na distância:
+        if (this.distancia < outraAresta.distancia) {
+            return -1;
+        } else if (this.distancia > outraAresta.distancia) {
+            return 1;
+        } else {
+            return 0; // As distâncias são iguais
+        }
+    }
 }

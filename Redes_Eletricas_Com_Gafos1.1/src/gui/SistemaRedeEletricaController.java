@@ -325,7 +325,7 @@ public class SistemaRedeEletricaController {
         no.setTitle("Árvore Geradora Mínima");
 
         // Calcular a Árvore Geradora Mínima (AGM)
-        Grafo agm = grafo.calcularAGM(0); // Você pode escolher um departamento de início (índice 0 neste exemplo)
+        Grafo agm = grafo.calcularAGM(); // Você pode escolher um departamento de início (índice 0 neste exemplo)
 
         GridPane grid = new GridPane(); // Organizando as labels e textfield em um Gridpane
         grid.setHgap(10);
@@ -358,7 +358,7 @@ public class SistemaRedeEletricaController {
                     gc.setLineWidth(1.0);
                     gc.strokeLine(aresta.getOrigem().getX(), aresta.getOrigem().getY(), aresta.getDestino().getX(), aresta.getDestino().getY());
                 }
-
+                System.out.println(agm.getArestas().size());
                 for (Aresta aresta : agm.getArestas()) {
                     gc = canvas.getGraphicsContext2D();
                     gc.setStroke(Color.PURPLE);
